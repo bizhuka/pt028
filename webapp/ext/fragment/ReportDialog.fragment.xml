@@ -1,0 +1,26 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:form="sap.ui.comp.smartform" xmlns:core="sap.ui.core">
+    <Dialog class="sapUiPopupWithPadding" title="Excel report" resizable="false" draggable="false" showHeader="true" horizontalScrolling="false" contentWidth="23em" afterOpen="_onInit_Inputs">
+        <content>
+            <form:SmartForm id="root_grp" title="" editable="true">
+                <form:layout>
+                    <form:ColumnLayout columnsM="1" columnsL="1" columnsXL="1" />
+                </form:layout>
+
+                <form:Group label="Highlight options:">
+                    <form:GroupElement label='Daily WS'>
+                        <MultiComboBox id="inTprog" items="{/ZC_PT028_ScheduleKind}">
+                            <core:Item key="{tprog}" text="{tprog}" />
+                        </MultiComboBox>
+                    </form:GroupElement>
+                    <form:GroupElement label='Days from Key Date'>
+                        <Input id="inDays" type="Number" required="true" value="31" maxLength="2" />
+                    </form:GroupElement>
+                </form:Group>
+            </form:SmartForm>
+        </content>
+        <buttons>
+            <Button text="Ok" type="Emphasized" press="_OnOkPress" />
+            <Button text="Cancel" type="Emphasized" press="_OnCancelPress" />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,32 @@
+<core:FragmentDefinition  xmlns="sap.m"
+                          xmlns:l="sap.ui.layout"
+						  xmlns:unified="sap.ui.unified"
+						  xmlns:core="sap.ui.core"
+                          xmlns:zz="zpt028.ext.controller"
+	 >
+    <l:VerticalLayout width="100%" id="WorkSchedule">
+		<zz:SPCalendar
+			id="SinglePlanningCalendar"
+            title="{calendar>/title}"
+		    startDateChange=".startDateChangeHandler"
+			appointments="{calendar>/schedule}"
+			startDate="{calendar>/startDate}"
+			firstDayOfWeek="1">
+			<zz:views>
+				<SinglePlanningCalendarMonthView
+					key="OneMonth"
+					title="Month"/>
+			</zz:views>
+			<zz:appointments>
+				<unified:CalendarAppointment
+					startDate="{calendar>start}"
+					endDate="{calendar>end}"
+					title="{calendar>title}"
+                    text="{calendar>info}"
+					type="{calendar>type}">
+				</unified:CalendarAppointment>
+			</zz:appointments>
+		</zz:SPCalendar>
+
+    </l:VerticalLayout>
+</core:FragmentDefinition>
