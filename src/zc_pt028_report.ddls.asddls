@@ -80,9 +80,9 @@ association[0..*] to ZC_PT028_Schedule as _Schedule   on _Schedule.pernr =  _org
     
     @UI.lineItem: [{ position: 110 }]
     key _org_assign.endda,
-         
+             
     key ' ' as stream_type,
-        
+            
 //       key coalesce( _phone.begda,              '77771231' ) as begda_phone,
 //       key coalesce( _phone.endda,              '77771231' ) as endda_phone,
         
@@ -102,7 +102,7 @@ association[0..*] to ZC_PT028_Schedule as _Schedule   on _Schedule.pernr =  _org
         key coalesce( _Position._LongText.endda, '77771231' ) as endda_pos_ltext,
             
         // Avatar  cast( ' ' as abap.char( 255 ) ) as photo_path,
-        concat( concat('../../../../../opu/odata/sap/ZC_PY000_ORGASSIGNMENT_CDS/ZC_PY000_PernrPhoto(pernr=''', _org_assign.pernr),
+        concat( concat('../../../../../opu/odata/sap/ZC_PY000_REPORT_CDS/ZC_PY000_PernrPhoto(pernr=''', _org_assign.pernr),
                        ''')/$value')  as photo_path,          
           
 //        @UI.selectionField: [{ position: 1 }]        
@@ -132,6 +132,7 @@ association[0..*] to ZC_PT028_Schedule as _Schedule   on _Schedule.pernr =  _org
         _pers_info.zzbirthplace,
         @UI.lineItem: [{ position: 60 }]
         @UI.fieldGroup: [{ qualifier: 'Main', position: 30 }]
+        @EndUserText.label: 'IIN'
         _pers_info.perid,   
         
         @UI.selectionField: [{ position: 80 }]
@@ -143,12 +144,13 @@ association[0..*] to ZC_PT028_Schedule as _Schedule   on _Schedule.pernr =  _org
             
         @UI.lineItem: [{ position: 70 }]
         @UI.fieldGroup: [{ qualifier: 'Doc', position: 10 }]
+        @EndUserText.label: 'KZ citizenship id'
         _document.nomer,
         @UI.lineItem: [{ position: 80 }]
         @UI.fieldGroup: [{ qualifier: 'Doc', position: 20 }]
         _document.datbg,
         @UI.lineItem: [{ position: 90 }]
-        @UI.fieldGroup: [{ qualifier: 'Doc', position: 30 }]
+        @UI.fieldGroup: [{ qualifier: 'Doc', position: 30 }]        
         _document.passl,
         
         @UI.selectionField: [{ position: 10 }]

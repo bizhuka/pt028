@@ -1,4 +1,4 @@
-CLASS zcl_pt028_report DEFINITION INHERITING FROM zcl_py000_odata
+CLASS zcl_pt028_report DEFINITION INHERITING FROM zcl_py000_report
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -9,8 +9,7 @@ CLASS zcl_pt028_report DEFINITION INHERITING FROM zcl_py000_odata
 
     METHODS:
 *      constructor,
-      zif_sadl_mpc~define           REDEFINITION,
-      zif_sadl_read_runtime~execute REDEFINITION.
+      zif_sadl_mpc~define           REDEFINITION.
 
   PROTECTED SECTION.
 
@@ -57,6 +56,7 @@ CLASS ZCL_PT028_REPORT IMPLEMENTATION.
     lo_entity->get_property( 'begda' )->set_as_content_type( ).
     lo_entity->get_property( 'endda' )->set_as_content_type( ).
 
+
 **********************************************************************
     DATA(lc_fixed_values) = /iwbep/if_mgw_odata_property=>gcs_value_list_type_property-fixed_values.
 
@@ -65,37 +65,6 @@ CLASS ZCL_PT028_REPORT IMPLEMENTATION.
 
     io_model->get_entity_type( 'ZC_PT028_ScheduleKindType' )->get_property( 'tprog' )->set_value_list( lc_fixed_values ).
     io_model->get_entity_type( 'ZC_PT028_REPORTType' )->get_property( 'tprog' )->set_value_list( lc_fixed_values ).
-  ENDMETHOD.
-
-
-  METHOD zif_sadl_read_runtime~execute.
-    super->zif_sadl_read_runtime~execute( EXPORTING iv_node_name       = iv_node_name
-                                                    it_range           = it_range
-                                                    iv_where           = iv_where
-                                                    is_requested       = is_requested
-                                          CHANGING  ct_data_rows       = ct_data_rows
-                                                    cv_number_all_hits = cv_number_all_hits ).
-**********************************************************************
-**********************************************************************
-***      DATA(lv_read_org_txt) = xsdbool( line_exists( is_requested-elements[ table_line = |PLANS_TXT| ] ) ).
-***      "DATA(lv_datum) = sy-datum. "TODO read current period
-
-
-*      LOOP AT ct_data_rows ASSIGNING FIELD-SYMBOL(<ls_row>).
-
-*        DO 1 TIMES.
-*          CHECK lv_read_org_txt = abap_true.
-*          DATA(ls_org_texts) = CORRESPONDING ts_org_texts( <ls_row> ).
-*
-*          ls_org_texts-plans_txt = zcl_hr_om_utilities=>get_object_full_name( im_otype = 'S'
-*                                                                              im_objid = ls_org_texts-plans
-*                                                                              im_subty = 'ZR02'
-*                                                                              im_datum = ls_org_texts-begda "lv_datum
-*                                                                             ).
-*          MOVE-CORRESPONDING ls_org_texts TO <ls_row>.
-*        ENDDO.
-
-*      ENDLOOP.
   ENDMETHOD.
 
 

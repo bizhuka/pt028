@@ -68,13 +68,8 @@ CLASS ZCL_PT028_SCHEDULE IMPLEMENTATION.
 
 
   METHOD zif_sadl_read_runtime~execute.
-    DATA(ls_key) = VALUE ts_key( ).
-
-    LOOP AT it_range ASSIGNING FIELD-SYMBOL(<ls_range>).
-      ASSIGN COMPONENT <ls_range>-column_name OF STRUCTURE ls_key TO FIELD-SYMBOL(<lv_value>).
-      CHECK sy-subrc = 0.
-      <lv_value> = <ls_range>-t_selopt[ 1 ]-low.
-    ENDLOOP.
+    ASSIGN ir_key->* TO FIELD-SYMBOL(<ls_key>).
+    DATA(ls_key) = CORRESPONDING ts_key( <ls_key> ).
 
     DATA(ls_range) = zcl_hr_month=>get_range( ls_key-datum(6) && '01' ).
 *    ADD: -1 TO ls_range-begda,

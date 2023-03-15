@@ -5,7 +5,8 @@ sap.ui.controller("zpt028.ext.controller.ListReportExtension", {
   onInit: function () {
     window._main_table = this.getView().byId(this._prefix + 'responsiveTable')
 
-    this.getView().byId('dpKeyDate').setValue(this.getDateIso(new Date()))
+    const keyDate = this.getCookie('KeyDate')
+    this.getView().byId('dpKeyDate').setValue(this.getDateIso(keyDate ? new Date(keyDate) : new Date()))
 
     const listReportFilter = this.getView().byId(this._prefix + 'listReportFilter')
     listReportFilter.setLiveMode(true)
@@ -16,6 +17,33 @@ sap.ui.controller("zpt028.ext.controller.ListReportExtension", {
       if (window._objectPage)
         window._objectPage.readCurrentSchedule(obj.pernr)
     })
+  },
+
+  getCookie: function (name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  },
+
+  onBeforeRebindTableExtension: function (oEvent) {
+    var oBindingParams = oEvent.getParameter("bindingParams");
+    oBindingParams.parameters = oBindingParams.parameters || {};
+
+    var oSmartTable = oEvent.getSource();
+    var oSmartFilterBar = this.byId(oSmartTable.getSmartFilterId());
+
+    if (!oSmartFilterBar instanceof sap.ui.comp.smartfilterbar.SmartFilterBar)
+      return
+
+    var oCustomControl = oSmartFilterBar.getControlByKey("cfKeyDate");
+    if (!oCustomControl instanceof sap.m.Switch)
+      return
+
+    const keyDate = oCustomControl.getValue()
+    document.cookie = 'KeyDate=' + keyDate + '; max-age=3600; path=/';
+
+    const datum = this.getDateIso(new Date(keyDate))
+    oBindingParams.filters.push(new sap.ui.model.Filter("key_date", "EQ", datum))
   },
 
   // TODO make lib
@@ -76,23 +104,6 @@ sap.ui.controller("zpt028.ext.controller.ListReportExtension", {
       baseMenu.getMenu().addItem(new sap.m.MenuItem(params))
     else  // For sapui5 1.71
       _view.byId(_this._prefix + 'template::ListReport::TableToolbar').addContent(new sap.m.Button(params))
-  },
-
-  onBeforeRebindTableExtension: function (oEvent) {
-    var oBindingParams = oEvent.getParameter("bindingParams");
-    oBindingParams.parameters = oBindingParams.parameters || {};
-
-    var oSmartTable = oEvent.getSource();
-    var oSmartFilterBar = this.byId(oSmartTable.getSmartFilterId());
-
-    if (!oSmartFilterBar instanceof sap.ui.comp.smartfilterbar.SmartFilterBar)
-      return
-
-    var oCustomControl = oSmartFilterBar.getControlByKey("cfKeyDate");
-    if (!oCustomControl instanceof sap.m.Switch)
-      return
-
-    oBindingParams.filters.push(new sap.ui.model.Filter("key_date", "EQ", oCustomControl.getValue()))
   },
 
   onInitSmartFilterBarExtension: function (oEvent) {
