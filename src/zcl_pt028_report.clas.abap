@@ -24,7 +24,7 @@ CLASS zcl_pt028_report DEFINITION INHERITING FROM zcl_py000_report
 *          plans_txt TYPE text150,      " Exporting
 *        END OF ts_org_texts,
 
-      tt_tprog TYPE STANDARD TABLE OF zvcpt028_0001-tprog WITH DEFAULT KEY.
+      tt_tprog TYPE STANDARD TABLE OF zc_pt028_report-tprog WITH DEFAULT KEY.
 
     CONSTANTS:
       BEGIN OF ms_const,
@@ -37,7 +37,7 @@ CLASS zcl_pt028_report DEFINITION INHERITING FROM zcl_py000_report
                    RETURNING VALUE(rv_file_content) TYPE xstring,
 
       _change_schedule_filter EXPORTING et_tprog     TYPE tt_tprog
-                                        ev_days_from TYPE zvcpt028_0001-days_from_key_date
+                                        ev_days_from TYPE zc_pt028_report-days_from_key_date
                               CHANGING  cv_filter    TYPE string.
 ENDCLASS.
 
@@ -214,7 +214,7 @@ CLASS ZCL_PT028_REPORT IMPLEMENTATION.
 
         READ TABLE lt_tprog TRANSPORTING NO FIELDS BINARY SEARCH
           WITH KEY table_line = <ls_pdpsp>-tprog.
-        CHECK sy-subrc = 0.
+        CHECK sy-subrc <> 0.
 
         INSERT |#{ <lv_day> }| INTO TABLE <ls_row>-unq_t.
       ENDDO.

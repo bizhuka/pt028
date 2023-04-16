@@ -21,7 +21,7 @@
 
 @ZABAP.virtualEntity: 'ZCL_PT028_REPORT'
 
-define view ZC_PT028_REPORT as select from ZC_PT028_PA0001 as _org_assign
+define view ZC_PT028_REPORT as select from ZC_PY000_OrgAssignment as _org_assign
 inner join pa0002 as _pers_info on _pers_info.pernr =  _org_assign.pernr
                                and _pers_info.begda <= _org_assign.begda
                                and _pers_info.endda >= _org_assign.begda   
@@ -63,7 +63,7 @@ inner join pa0007 as p7 on p7.pernr  = _org_assign.pernr
                                                                                                              
 association[0..*] to ZC_PT028_ScheduleRule as _ScheduleRule on _ScheduleRule.zzbwpa = p7.zzbwpa
 
-association[0..*] to ZC_PT028_ScheduleKind as _ScheduleKind on _ScheduleKind.tprog = _org_assign.tprog
+association[0..*] to ZC_PT028_ScheduleKind as _ScheduleKind on _ScheduleKind.tprog = $projection.tprog
 
 association[0..*] to ZC_PT028_Schedule as _Schedule   on _Schedule.pernr =  _org_assign.pernr
                                                      and _Schedule.begda <= _org_assign.begda
@@ -107,14 +107,15 @@ association[0..*] to ZC_PT028_Schedule as _Schedule   on _Schedule.pernr =  _org
           
 //        @UI.selectionField: [{ position: 1 }]        
 //        @Consumption.filter: { mandatory: true } //selectionType: #INTERVAL, multipleSelections: false,
-        key_date,
+        datum as key_date,
+        
         
         @EndUserText.label: 'Days from Key Date' 
-        days_from_key_date,
+        cast( '31' as abap.numc( 2 ) ) as days_from_key_date,
                
         @EndUserText.label: 'Daily WS' 
         @Consumption.valueHelp: '_ScheduleKind' 
-        tprog,
+        cast( ' ' as abap.char( 4 ) ) as tprog,
         
         @Search: { defaultSearchElement: true, fuzzinessThreshold: 0.8 }
         @UI.lineItem: [{ position: 30, importance: #HIGH }]
