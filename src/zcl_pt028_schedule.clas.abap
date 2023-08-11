@@ -1,20 +1,35 @@
 CLASS zcl_pt028_schedule DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
+  PUBLIC FINAL
+  CREATE PUBLIC
+
+  GLOBAL FRIENDS zcl_aqo_option.
 
   PUBLIC SECTION.
 
-    INTERFACES zif_sadl_exit .
-    INTERFACES zif_sadl_read_runtime .
+    INTERFACES:
+      zif_sadl_exit,
+      zif_sadl_read_runtime.
 
     TYPES:
-      tt_schedule TYPE STANDARD TABLE OF zdpt028_schedule WITH DEFAULT KEY.
+      tt_schedule TYPE STANDARD TABLE OF zc_pt028_schedule WITH DEFAULT KEY,
+
+      BEGIN OF ts_kind,
+        kind  TYPE zdpt028_schedule-kind,
+        name  TYPE text70,
+        tprog TYPE RANGE OF char7, "zdpt028_schedule-tprog,
+        color TYPE char7,
+      END OF ts_kind,
+      tt_kind TYPE STANDARD TABLE OF ts_kind WITH DEFAULT KEY.
+
+    DATA:
+      t_kind TYPE tt_kind READ-ONLY.
 
     METHODS:
-      get_schedule IMPORTING iv_pernr    TYPE pernr-pernr
-                             is_dates    TYPE zcl_hr_month=>ts_range
-                   RETURNING VALUE(rt_pdpsp)   TYPE zcl_214=>pdpsp_tab.
+      constructor,
+
+      get_schedule IMPORTING iv_pernr        TYPE pernr-pernr
+                             is_dates        TYPE zcl_hr_month=>ts_range
+                   RETURNING VALUE(rt_pdpsp) TYPE zcl_214=>pdpsp_tab.
   PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF ts_key,
@@ -30,6 +45,12 @@ ENDCLASS.
 
 
 CLASS ZCL_PT028_SCHEDULE IMPLEMENTATION.
+
+
+  METHOD constructor.
+    zcl_aqo_option=>create( io_data      = me
+                            iv_option_id = 'SCHEDULE' ).
+  ENDMETHOD.
 
 
   METHOD get_schedule.
@@ -68,8 +89,7 @@ CLASS ZCL_PT028_SCHEDULE IMPLEMENTATION.
 
 
   METHOD zif_sadl_read_runtime~execute.
-    ASSIGN ir_key->* TO FIELD-SYMBOL(<ls_key>).
-    DATA(ls_key) = CORRESPONDING ts_key( <ls_key> ).
+    DATA(ls_key) = CORRESPONDING ts_key( is_filter ).
 
     DATA(ls_range) = zcl_hr_month=>get_range( ls_key-datum(6) && '01' ).
 *    ADD: -1 TO ls_range-begda,
@@ -99,11 +119,13 @@ CLASS ZCL_PT028_SCHEDULE IMPLEMENTATION.
       lv_prev_tprog = <ls_pdpsp>-tprog.
 
 *       Change color
-      <ls_schedule>-kind = COND #( WHEN <ls_schedule>-tprog CP 'DAY*'  THEN '01'
-                                   WHEN <ls_schedule>-tprog CP 'FREE'  THEN '03'
-                                   WHEN <ls_schedule>-tprog CP 'N*GH*' THEN '06'
-                                   WHEN <ls_schedule>-tprog CP 'N*RM*' THEN '02'
-                                                                       ELSE '05' ).
+      LOOP AT t_kind ASSIGNING FIELD-SYMBOL(<ls_kind>).
+        CHECK <ls_schedule>-tprog IN <ls_kind>-tprog[].
+
+        <ls_schedule>-kind  = <ls_kind>-kind.
+        <ls_schedule>-color = <ls_kind>-color.
+        EXIT. " 1st rule
+      ENDLOOP.
 
       READ TABLE lt_info ASSIGNING FIELD-SYMBOL(<ls_info>) BINARY SEARCH
        WITH KEY  motpr = <ls_pdpsp>-motpr tprog = <ls_pdpsp>-tprog.

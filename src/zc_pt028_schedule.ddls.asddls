@@ -19,5 +19,7 @@ define view ZC_PT028_Schedule as select from zdpt028_schedule {
         tprog,
         
         kind,
-        info
+        info,
+        
+        cast(' ' as abap.char( 7 ) ) as color
 }
